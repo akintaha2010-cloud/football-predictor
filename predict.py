@@ -4,6 +4,7 @@
     python predict.py Arsenal Chelsea --league E0
     python predict.py Galatasaray Fenerbahce --neutral
     python predict.py --league T1 --table
+    python predict.py --league T1 --table --csv ratings.csv
     python predict.py Galatasaray Fenerbahce --json
     python predict.py Galatasaray Fenerbahce --form
 """
@@ -33,6 +34,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--table", action="store_true", help="Show team ratings instead of a match")
     parser.add_argument("--neutral", action="store_true", help="Neutral venue: no home advantage")
     parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
+    parser.add_argument("--csv", metavar="FILE", help="With --table: also save the ratings as CSV")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
@@ -40,6 +42,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.table and not (args.home and args.away):
         parser.error("give HOME and AWAY teams, or --table")
+    if args.csv and not args.table:
+        parser.error("--csv only works with --table")
 
     results = load_results(args.league, recent_seasons(args.seasons), refresh=args.refresh)
     model = DixonColes(xi=args.xi, l2=args.l2).fit(results)
@@ -58,6 +62,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{'Team':<20} {'Goals for':>9} {'Goals against':>13} {'Strength':>8}")
         for team, row in table.iterrows():
             print(f"{team:<20} {row.goals_for:9.2f} {row.goals_against:13.2f} {row.strength:+8.2f}")
+        if args.csv:
+            table.rename_axis("team").to_csv(args.csv, float_format="%.4f")
+            print(f"\nSaved {args.csv}")
         return 0
 
     try:
