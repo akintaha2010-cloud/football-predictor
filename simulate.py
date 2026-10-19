@@ -3,6 +3,7 @@
     python simulate.py --league T1
     python simulate.py --league E0 --top 4 --relegated 3 --sims 20000
     python simulate.py --league T1 --plot season.png
+    python simulate.py --league T1 --csv season.csv
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--top", type=int, default=4, help="Places that count as 'top' (e.g. European spots)")
     parser.add_argument("--relegated", type=int, default=3, help="Number of relegation places")
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--csv", metavar="FILE", help="Also save the table as CSV")
     parser.add_argument("--plot", metavar="FILE", help="Save a heatmap of finishing positions (needs matplotlib)")
     parser.add_argument("--refresh", action="store_true", help="Re-download the data files")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI)
@@ -46,6 +48,10 @@ def main(argv: list[str] | None = None) -> int:
     for team, row in table.iterrows():
         print(f"{team:<20} {int(row.played):3d} {int(row.points):4d} {row.expected_points:6.1f} "
               f"{row.title:7.1%} {row.top:7.1%} {row.relegated:7.1%}")
+
+    if args.csv:
+        table.rename_axis("team").to_csv(args.csv, float_format="%.4f")
+        print(f"\nSaved {args.csv}")
 
     if args.plot:
         from football_predictor.plot import plot_positions

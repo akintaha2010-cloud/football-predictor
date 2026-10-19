@@ -77,6 +77,7 @@ python fixtures.py --league E0 --csv predictions.csv
 python simulate.py --league T1
 python simulate.py --league E0 --top 4 --relegated 3 --sims 20000
 python simulate.py --league T1 --plot docs/season_T1.png
+python simulate.py --league T1 --csv season.csv   # table as a spreadsheet
 ```
 
 ![Süper Lig 2026/27: chance of each final position](docs/season_T1.png)
