@@ -85,6 +85,21 @@ class MatchPrediction:
     def both_teams_score(self) -> float:
         return float(self.score_matrix[1:, 1:].sum())
 
+    def to_dict(self, top_n: int = 5) -> dict:
+        return {
+            "home": self.home,
+            "away": self.away,
+            "expected_goals": {"home": self.home_goals, "away": self.away_goals},
+            "result": {"home_win": self.home_win, "draw": self.draw, "away_win": self.away_win},
+            "over": {str(line): self.over(line) for line in (1.5, 2.5, 3.5)},
+            "both_teams_score": self.both_teams_score,
+            "handicap": {
+                f"{line:+.1f}": dict(zip(("win", "push", "lose"), self.handicap(line)))
+                for line in (-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5)
+            },
+            "top_scores": [{"score": f"{h}-{a}", "probability": prob} for h, a, prob in self.top_scores(top_n)],
+        }
+
     def top_scores(self, n: int = 5) -> list[tuple[int, int, float]]:
         flat = np.argsort(self.score_matrix, axis=None)[::-1][:n]
         rows, cols = np.unravel_index(flat, self.score_matrix.shape)
