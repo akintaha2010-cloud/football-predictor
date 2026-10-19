@@ -7,12 +7,14 @@
     python predict.py --league T1 --table --csv ratings.csv
     python predict.py Galatasaray Fenerbahce --json
     python predict.py Galatasaray Fenerbahce --form
+    python predict.py Galatasaray Fenerbahce --score 2-1
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 
 from football_predictor.data import LEAGUES, load_results, recent_seasons
@@ -36,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
     parser.add_argument("--csv", metavar="FILE", help="With --table: also save the ratings as CSV")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    parser.add_argument("--score", metavar="H-A", help="Also show the chance of this exact score, e.g. 2-1")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
     args = parser.parse_args(argv)
@@ -44,6 +47,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("give HOME and AWAY teams, or --table")
     if args.csv and not args.table:
         parser.error("--csv only works with --table")
+    if args.score and not re.fullmatch(r"\d+-\d+", args.score):
+        parser.error("--score must look like 2-1")
 
     results = load_results(args.league, recent_seasons(args.seasons), refresh=args.refresh)
     model = DixonColes(xi=args.xi, l2=args.l2).fit(results)
@@ -101,6 +106,9 @@ def main(argv: list[str] | None = None) -> int:
     for line in (centre - 0.5, centre, centre + 0.5):
         win, push, lose = p.handicap(line)
         print(f"    {line:+.1f}".ljust(28) + f"{pct(win)} {pct(push)} {pct(lose)}")
+    if args.score:
+        home_goals, away_goals = map(int, args.score.split("-"))
+        print(f"\n  Exact score {home_goals}-{away_goals}:".ljust(29) + pct(p.score_probability(home_goals, away_goals)))
     print("\n  Most likely scores:")
     for home_goals, away_goals, prob in p.top_scores(5):
         print(f"    {home_goals}-{away_goals}  {pct(prob)}")

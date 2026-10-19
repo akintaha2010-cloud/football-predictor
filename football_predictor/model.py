@@ -129,6 +129,13 @@ class MatchPrediction:
             "top_scores": [{"score": f"{h}-{a}", "probability": prob} for h, a, prob in self.top_scores(top_n)],
         }
 
+    def score_probability(self, home_goals: int, away_goals: int) -> float:
+        """Chance of one exact final score (0 beyond the model's goal limit)."""
+        rows, cols = self.score_matrix.shape
+        if not (0 <= home_goals < rows and 0 <= away_goals < cols):
+            return 0.0
+        return float(self.score_matrix[home_goals, away_goals])
+
     def top_scores(self, n: int = 5) -> list[tuple[int, int, float]]:
         flat = np.argsort(self.score_matrix, axis=None)[::-1][:n]
         rows, cols = np.unravel_index(flat, self.score_matrix.shape)

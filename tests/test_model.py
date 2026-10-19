@@ -170,3 +170,11 @@ def test_fair_odds_are_inverse_probabilities(model):
     assert odds["home"] * p.home_win == pytest.approx(1.0)
     assert sum(1 / o for o in odds.values()) == pytest.approx(1.0)
     assert odds["home"] < odds["away"]
+
+
+def test_score_probability(model):
+    p = model.predict("A", "D")
+    h, a, prob = p.top_scores(1)[0]
+    assert p.score_probability(h, a) == pytest.approx(prob)
+    assert p.score_probability(99, 0) == 0.0
+    assert p.score_probability(-1, 0) == 0.0
