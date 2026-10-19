@@ -19,6 +19,7 @@ python predict.py Galatasaray Fenerbahce
 python predict.py Arsenal Chelsea --league E0
 python predict.py Galatasaray Fenerbahce --neutral   # neutral venue, e.g. a cup final
 python predict.py --league T1 --table      # team ratings
+python predict.py Galatasaray Fenerbahce --json   # JSON for other programs
 ```
 
 The first run downloads the last 3 seasons from [football-data.co.uk](https://www.football-data.co.uk) into `data/`. Use `--refresh` to fetch new results. Leagues: `T1` Süper Lig, `E0` Premier League, `E1` Championship, `SP1` La Liga, `I1` Serie A, `D1` Bundesliga, `F1` Ligue 1, `N1` Eredivisie, `P1` Primeira Liga.

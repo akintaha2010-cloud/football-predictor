@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pandas as pd
 import pytest
@@ -127,3 +128,12 @@ def test_handicap_lines(model):
     assert win < p.home_win
     assert p.handicap(-1.5)[0] == pytest.approx(win)
     assert p.handicap(0.5)[0] == pytest.approx(p.home_win + p.draw)
+
+
+def test_to_dict_is_json_ready(model):
+    p = model.predict("A", "D")
+    data = json.loads(json.dumps(p.to_dict(top_n=3)))
+    assert data["result"]["home_win"] == pytest.approx(p.home_win)
+    assert data["over"]["2.5"] == pytest.approx(p.over(2.5))
+    assert data["handicap"]["-1.0"]["push"] == pytest.approx(p.handicap(-1)[1])
+    assert len(data["top_scores"]) == 3
