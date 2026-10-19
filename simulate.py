@@ -2,6 +2,7 @@
 
     python simulate.py --league T1
     python simulate.py --league E0 --top 4 --relegated 3 --sims 20000
+    python simulate.py --league T1 --plot season.png
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--top", type=int, default=4, help="Places that count as 'top' (e.g. European spots)")
     parser.add_argument("--relegated", type=int, default=3, help="Number of relegation places")
     parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--plot", metavar="FILE", help="Save a heatmap of finishing positions (needs matplotlib)")
     parser.add_argument("--refresh", action="store_true", help="Re-download the data files")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI)
     parser.add_argument("--l2", type=float, default=DEFAULT_L2)
@@ -36,14 +38,20 @@ def main(argv: list[str] | None = None) -> int:
     summary["title"] = positions[:, 0]
     summary["top"] = positions[:, : args.top].sum(axis=1)
     summary["relegated"] = positions[:, n_teams - args.relegated :].sum(axis=1)
-    summary = summary.sort_values("expected_points", ascending=False)
+    table = summary.sort_values("expected_points", ascending=False)
 
     remaining = len(remaining_fixtures(current))
     print(f"{LEAGUES[args.league]}: {len(current)} matches played, {remaining} left, {args.sims} simulations\n")
     print(f"{'Team':<20} {'P':>3} {'Pts':>4} {'xPts':>6} {'Title':>7} {'Top ' + str(args.top):>7} {'Releg.':>7}")
-    for team, row in summary.iterrows():
+    for team, row in table.iterrows():
         print(f"{team:<20} {int(row.played):3d} {int(row.points):4d} {row.expected_points:6.1f} "
               f"{row.title:7.1%} {row.top:7.1%} {row.relegated:7.1%}")
+
+    if args.plot:
+        from football_predictor.plot import plot_positions
+
+        title = f"{LEAGUES[args.league]}: chance of each final position (%)"
+        print(f"\nSaved {plot_positions(summary, positions, args.plot, title)}")
     return 0
 
 

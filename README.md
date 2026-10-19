@@ -54,9 +54,12 @@ Galatasaray vs Fenerbahce
 ```
 python simulate.py --league T1
 python simulate.py --league E0 --top 4 --relegated 3 --sims 20000
+python simulate.py --league T1 --plot docs/season_T1.png
 ```
 
-`simulate.py` plays every remaining fixture of the current season 10,000 times with the model's score probabilities. It then reports each team's expected points and its chances of winning the title, finishing in the top N, or being relegated. Ties are broken on goal difference, then goals scored. Leagues that use head-to-head first are approximated.
+![Süper Lig 2026/27: chance of each final position](docs/season_T1.png)
+
+`simulate.py` plays every remaining fixture of the current season 10,000 times with the model's score probabilities. It then reports each team's expected points and its chances of winning the title, finishing in the top N, or being relegated. `--plot` saves the full table of position chances as a heatmap. Ties are broken on goal difference, then goals scored. Leagues that use head-to-head first are approximated.
 
 ## Compare with bookmaker odds
 
