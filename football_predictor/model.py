@@ -69,6 +69,21 @@ class MatchPrediction:
         goals = np.add.outer(np.arange(self.score_matrix.shape[0]), np.arange(self.score_matrix.shape[1]))
         return float(self.score_matrix[goals > line].sum())
 
+    @property
+    def double_chance(self) -> dict[str, float]:
+        """1X (home or draw), 12 (either team wins) and X2 (draw or away)."""
+        return {
+            "1X": self.home_win + self.draw,
+            "12": self.home_win + self.away_win,
+            "X2": self.draw + self.away_win,
+        }
+
+    @property
+    def draw_no_bet(self) -> tuple[float, float]:
+        """Home and away win probabilities when a draw refunds the stake."""
+        decided = self.home_win + self.away_win
+        return self.home_win / decided, self.away_win / decided
+
     def handicap(self, line: float) -> tuple[float, float, float]:
         """Home win / push / home loss probabilities when `line` goals are added to the home score.
 
@@ -92,6 +107,8 @@ class MatchPrediction:
             "expected_goals": {"home": self.home_goals, "away": self.away_goals},
             "result": {"home_win": self.home_win, "draw": self.draw, "away_win": self.away_win},
             "over": {str(line): self.over(line) for line in (1.5, 2.5, 3.5)},
+            "double_chance": self.double_chance,
+            "draw_no_bet": dict(zip(("home", "away"), self.draw_no_bet)),
             "both_teams_score": self.both_teams_score,
             "handicap": {
                 f"{line:+.1f}": dict(zip(("win", "push", "lose"), self.handicap(line)))

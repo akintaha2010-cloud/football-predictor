@@ -137,3 +137,12 @@ def test_to_dict_is_json_ready(model):
     assert data["over"]["2.5"] == pytest.approx(p.over(2.5))
     assert data["handicap"]["-1.0"]["push"] == pytest.approx(p.handicap(-1)[1])
     assert len(data["top_scores"]) == 3
+
+
+def test_double_chance_and_draw_no_bet(model):
+    p = model.predict("A", "D")
+    assert p.double_chance["1X"] == pytest.approx(1 - p.away_win, abs=1e-6)
+    assert sum(p.double_chance.values()) == pytest.approx(2 * (p.home_win + p.draw + p.away_win))
+    home, away = p.draw_no_bet
+    assert home + away == pytest.approx(1)
+    assert home > p.home_win
