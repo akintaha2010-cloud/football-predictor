@@ -24,6 +24,8 @@ LEAGUES = {
 }
 
 COLUMNS = ["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"]
+# Market average closing odds, kept when present so predictions can be compared to bookmakers.
+ODDS_COLUMNS = ["AvgH", "AvgD", "AvgA"]
 
 
 def season_code(start_year: int) -> str:
@@ -56,14 +58,17 @@ def download(league: str, season: str, data_dir: Path = DATA_DIR, force: bool = 
 
 
 def read_results(path: Path) -> pd.DataFrame:
-    df = pd.read_csv(path, encoding="utf-8-sig", usecols=lambda c: c in COLUMNS)
+    df = pd.read_csv(path, encoding="utf-8-sig", usecols=lambda c: c in COLUMNS + ODDS_COLUMNS)
     df = df.dropna(subset=COLUMNS)
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True, format="mixed")
     df["FTHG"] = df["FTHG"].astype(int)
     df["FTAG"] = df["FTAG"].astype(int)
     df["HomeTeam"] = df["HomeTeam"].str.strip()
     df["AwayTeam"] = df["AwayTeam"].str.strip()
-    return df[COLUMNS]
+    for col in ODDS_COLUMNS:
+        if col not in df.columns:
+            df[col] = float("nan")
+    return df[COLUMNS + ODDS_COLUMNS]
 
 
 def load_results(league: str, seasons: list[str], data_dir: Path = DATA_DIR, refresh: bool = False) -> pd.DataFrame:
