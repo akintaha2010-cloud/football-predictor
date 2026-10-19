@@ -38,6 +38,15 @@ Galatasaray vs Fenerbahce
     2-2    6.9%
 ```
 
+## Simulate the season
+
+```
+python simulate.py --league T1
+python simulate.py --league E0 --top 4 --relegated 3 --sims 20000
+```
+
+`simulate.py` plays every remaining fixture of the current season 10,000 times with the model's score probabilities. It then reports each team's expected points and its chances of winning the title, finishing in the top N, or being relegated. Ties are broken on goal difference, then goals scored. Leagues that use head-to-head first are approximated.
+
 ## How it works
 
 `football_predictor/model.py` implements the Dixon-Coles (1997) model. Each team has an attack and a defence rating, and goals are Poisson distributed:
