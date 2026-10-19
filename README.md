@@ -120,3 +120,7 @@ python backtest.py --league E0 --season 2526
 ```
 python -m pytest
 ```
+
+## License
+
+MIT, see [LICENSE](LICENSE). Match data comes from [football-data.co.uk](https://www.football-data.co.uk) and is subject to its own terms.
