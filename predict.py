@@ -5,6 +5,7 @@
     python predict.py Galatasaray Fenerbahce --neutral
     python predict.py --league T1 --table
     python predict.py Galatasaray Fenerbahce --json
+    python predict.py Galatasaray Fenerbahce --form
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ import json
 import sys
 
 from football_predictor.data import LEAGUES, load_results, recent_seasons
+from football_predictor.form import recent_form
 from football_predictor.model import DEFAULT_L2, DEFAULT_XI, DixonColes
 
 
@@ -30,6 +32,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--refresh", action="store_true", help="Re-download the data files")
     parser.add_argument("--table", action="store_true", help="Show team ratings instead of a match")
     parser.add_argument("--neutral", action="store_true", help="Neutral venue: no home advantage")
+    parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
@@ -90,6 +93,12 @@ def main(argv: list[str] | None = None) -> int:
     print("\n  Most likely scores:")
     for home_goals, away_goals, prob in p.top_scores(5):
         print(f"    {home_goals}-{away_goals}  {pct(prob)}")
+    if args.form:
+        for team in (p.home, p.away):
+            form = recent_form(results, team)
+            print(f"\n  {team} last {len(form)}: {''.join(form['result'])}")
+            for row in form.itertuples():
+                print(f"    {row.Date:%d %b %Y}  {row.venue}  {row.score:>5}  {row.opponent}")
     return 0
 
 
