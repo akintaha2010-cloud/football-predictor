@@ -115,6 +115,8 @@ The model is clearly better than guessing the most common result. It is a little
 python backtest.py --league E0 --season 2526
 ```
 
+It also prints a calibration table: all predicted probabilities are grouped into bins, and the average prediction in each bin is compared with how often those outcomes actually happened. A well-calibrated model has the two columns close together.
+
 ## Tests
 
 ```
