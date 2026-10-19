@@ -1,5 +1,7 @@
 # football-predictor
 
+[![tests](https://github.com/akintaha2010-cloud/football-predictor/actions/workflows/tests.yml/badge.svg)](https://github.com/akintaha2010-cloud/football-predictor/actions/workflows/tests.yml)
+
 Estimates football match probabilities (home win / draw / away win, exact scores, over/under 2.5, both teams to score) from past results.
 
 ## Setup
