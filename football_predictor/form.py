@@ -1,4 +1,4 @@
-"""Recent results of a team."""
+"""Recent results of a team and past meetings between two teams."""
 
 from __future__ import annotations
 
@@ -20,4 +20,17 @@ def recent_form(results: pd.DataFrame, team: str, n: int = 5) -> pd.DataFrame:
         "result": (goals_for > goals_against).map({True: "W", False: ""})
         + (goals_for == goals_against).map({True: "D", False: ""})
         + (goals_for < goals_against).map({True: "L", False: ""}),
+    }).reset_index(drop=True)
+
+
+def head_to_head(results: pd.DataFrame, team: str, other: str, n: int = 5) -> pd.DataFrame:
+    """Last `n` meetings of the two teams, newest first, at either ground."""
+    met = results[((results["HomeTeam"] == team) & (results["AwayTeam"] == other))
+                  | ((results["HomeTeam"] == other) & (results["AwayTeam"] == team))]
+    met = met.sort_values("Date", ascending=False).head(n)
+    return pd.DataFrame({
+        "Date": met["Date"],
+        "HomeTeam": met["HomeTeam"],
+        "AwayTeam": met["AwayTeam"],
+        "score": met["FTHG"].astype(str) + "-" + met["FTAG"].astype(str),
     }).reset_index(drop=True)

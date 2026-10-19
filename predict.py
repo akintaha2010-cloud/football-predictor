@@ -9,6 +9,7 @@
     python predict.py Galatasaray Fenerbahce --form
     python predict.py Galatasaray Fenerbahce --score 2-1
     python predict.py Galatasaray Fenerbahce --top 10
+    python predict.py Galatasaray Fenerbahce --h2h
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ import re
 import sys
 
 from football_predictor.data import LEAGUES, load_results, recent_seasons
-from football_predictor.form import recent_form
+from football_predictor.form import head_to_head, recent_form
 from football_predictor.model import DEFAULT_L2, DEFAULT_XI, DixonColes
 
 
@@ -39,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
     parser.add_argument("--csv", metavar="FILE", help="With --table: also save the ratings as CSV")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    parser.add_argument("--h2h", action="store_true", help="Also show the last 5 meetings of the two teams")
     parser.add_argument("--top", type=int, default=5, metavar="N", help="How many most likely scores to show (default: 5)")
     parser.add_argument("--score", metavar="H-A", help="Also show the chance of this exact score, e.g. 2-1")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
@@ -122,6 +124,11 @@ def main(argv: list[str] | None = None) -> int:
             print(f"\n  {team} last {len(form)}: {''.join(form['result'])}")
             for row in form.itertuples():
                 print(f"    {row.Date:%d %b %Y}  {row.venue}  {row.score:>5}  {row.opponent}")
+    if args.h2h:
+        meetings = head_to_head(results, p.home, p.away)
+        print(f"\n  Last {len(meetings)} meetings:")
+        for row in meetings.itertuples():
+            print(f"    {row.Date:%d %b %Y}  {row.HomeTeam} {row.score} {row.AwayTeam}")
     return 0
 
 
