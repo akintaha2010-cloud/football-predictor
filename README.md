@@ -54,6 +54,15 @@ Galatasaray vs Fenerbahce
     2-2    6.9%
 ```
 
+## Predict the next round
+
+```
+python fixtures.py --league T1
+python fixtures.py --league E0 --csv predictions.csv
+```
+
+`fixtures.py` lists every upcoming match on football-data.co.uk's fixtures page with home/draw/away, over 2.5 and the most likely score.
+
 ## Simulate the season
 
 ```
