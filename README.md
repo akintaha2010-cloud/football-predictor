@@ -63,7 +63,7 @@ python fixtures.py --league T1
 python fixtures.py --league E0 --csv predictions.csv
 ```
 
-`fixtures.py` lists every upcoming match on football-data.co.uk's fixtures page with home/draw/away, over 2.5 and the most likely score.
+`fixtures.py` lists every upcoming match on football-data.co.uk's fixtures page (skipping ones already played) with home/draw/away, over 2.5 and the most likely score.
 
 ## Simulate the season
 

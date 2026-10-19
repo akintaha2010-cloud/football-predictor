@@ -14,6 +14,15 @@ from football_predictor.data import LEAGUES, load_fixtures, load_results, recent
 from football_predictor.model import DEFAULT_L2, DEFAULT_XI, DixonColes
 
 
+def unplayed(fixtures: pd.DataFrame, results: pd.DataFrame, today: pd.Timestamp | None = None) -> pd.DataFrame:
+    """Drops fixtures that are already in `results` or dated before `today` (the fixtures page lags behind)."""
+    today = pd.Timestamp(today if today is not None else pd.Timestamp.now()).normalize()
+    played = set(zip(results["Date"].dt.normalize(), results["HomeTeam"], results["AwayTeam"]))
+    keys = zip(fixtures["Date"].dt.normalize(), fixtures["HomeTeam"], fixtures["AwayTeam"])
+    keep = [key not in played and key[0] >= today for key in keys]
+    return fixtures[keep].reset_index(drop=True)
+
+
 def predict_fixtures(model: DixonColes, fixtures: pd.DataFrame) -> pd.DataFrame:
     """One row per fixture with outcome probabilities; matches with unknown teams are dropped."""
     rows = []
@@ -45,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
 
     results = load_results(args.league, recent_seasons(args.seasons), refresh=args.refresh)
     model = DixonColes(xi=args.xi, l2=args.l2).fit(results)
-    table = predict_fixtures(model, load_fixtures(args.league))
+    table = predict_fixtures(model, unplayed(load_fixtures(args.league), results))
     if table.empty:
         print(f"No upcoming {LEAGUES[args.league]} fixtures listed right now.")
         return 0
