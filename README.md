@@ -124,6 +124,10 @@ It also prints a calibration table: all predicted probabilities are grouped into
 python -m pytest
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
 MIT, see [LICENSE](LICENSE). Match data comes from [football-data.co.uk](https://www.football-data.co.uk) and is subject to its own terms.
