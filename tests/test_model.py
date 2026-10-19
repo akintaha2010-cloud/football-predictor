@@ -146,3 +146,10 @@ def test_double_chance_and_draw_no_bet(model):
     home, away = p.draw_no_bet
     assert home + away == pytest.approx(1)
     assert home > p.home_win
+
+
+def test_every_league_has_a_name():
+    from football_predictor.data import LEAGUES
+
+    assert len(LEAGUES) == 18
+    assert all(code.isalnum() and name for code, name in LEAGUES.items())

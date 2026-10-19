@@ -22,7 +22,7 @@ python predict.py --league T1 --table      # team ratings
 python predict.py Galatasaray Fenerbahce --json   # JSON for other programs
 ```
 
-The first run downloads the last 3 seasons from [football-data.co.uk](https://www.football-data.co.uk) into `data/`. Use `--refresh` to fetch new results. Leagues: `T1` Süper Lig, `E0` Premier League, `E1` Championship, `SP1` La Liga, `I1` Serie A, `D1` Bundesliga, `F1` Ligue 1, `N1` Eredivisie, `P1` Primeira Liga.
+The first run downloads the last 3 seasons from [football-data.co.uk](https://www.football-data.co.uk) into `data/`. Use `--refresh` to fetch new results. Leagues: `T1` Süper Lig, `E0` Premier League, `E1` Championship, `SP1` La Liga, `I1` Serie A, `D1` Bundesliga, `F1` Ligue 1, `N1` Eredivisie, `P1` Primeira Liga, `E2` League One, `SC0` Scottish Premiership, `SC1` Scottish Championship, `B1` Belgian Pro League, `G1` Greek Super League, `D2` 2. Bundesliga, `I2` Serie B, `SP2` Segunda División, `F2` Ligue 2.
 
 ```
 Galatasaray vs Fenerbahce

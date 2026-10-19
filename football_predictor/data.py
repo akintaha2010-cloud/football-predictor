@@ -22,6 +22,15 @@ LEAGUES = {
     "F1": "France Ligue 1",
     "N1": "Netherlands Eredivisie",
     "P1": "Portugal Primeira Liga",
+    "E2": "England League One",
+    "SC0": "Scotland Premiership",
+    "SC1": "Scotland Championship",
+    "B1": "Belgium Pro League",
+    "G1": "Greece Super League",
+    "D2": "Germany 2. Bundesliga",
+    "I2": "Italy Serie B",
+    "SP2": "Spain Segunda Division",
+    "F2": "France Ligue 2",
 }
 
 COLUMNS = ["Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"]
