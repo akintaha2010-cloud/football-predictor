@@ -155,9 +155,11 @@ class DixonColes:
         hint = f" Did you mean: {', '.join(close)}?" if close else ""
         raise KeyError(f"Unknown team {name!r}.{hint}")
 
-    def predict(self, home: str, away: str) -> MatchPrediction:
+    def predict(self, home: str, away: str, neutral: bool = False) -> MatchPrediction:
+        """`neutral=True` drops home advantage, e.g. for cup finals at a neutral stadium."""
         home, away = self.resolve_team(home), self.resolve_team(away)
-        lam = np.exp(self.home_adv + self.attack[home] - self.defence[away])
+        home_adv = 0.0 if neutral else self.home_adv
+        lam = np.exp(home_adv + self.attack[home] - self.defence[away])
         mu = np.exp(self.attack[away] - self.defence[home])
         goals = np.arange(self.max_goals + 1)
         matrix = np.outer(poisson.pmf(goals, lam), poisson.pmf(goals, mu))

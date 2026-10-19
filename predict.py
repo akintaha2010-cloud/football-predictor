@@ -2,6 +2,7 @@
 
     python predict.py Galatasaray Fenerbahce
     python predict.py Arsenal Chelsea --league E0
+    python predict.py Galatasaray Fenerbahce --neutral
     python predict.py --league T1 --table
 """
 
@@ -26,6 +27,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--seasons", type=int, default=3, help="Number of recent seasons to train on")
     parser.add_argument("--refresh", action="store_true", help="Re-download the data files")
     parser.add_argument("--table", action="store_true", help="Show team ratings instead of a match")
+    parser.add_argument("--neutral", action="store_true", help="Neutral venue: no home advantage")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
     args = parser.parse_args(argv)
@@ -46,12 +48,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     try:
-        p = model.predict(args.home, args.away)
+        p = model.predict(args.home, args.away, neutral=args.neutral)
     except KeyError as error:
         print(error.args[0], file=sys.stderr)
         return 1
 
-    print(f"{p.home} vs {p.away}")
+    print(f"{p.home} vs {p.away}" + (" (neutral venue)" if args.neutral else ""))
     print(f"  Expected goals:   {p.home_goals:.2f} - {p.away_goals:.2f}\n")
     print(f"  {p.home} win:".ljust(28) + pct(p.home_win))
     print("  Draw:".ljust(28) + pct(p.draw))
