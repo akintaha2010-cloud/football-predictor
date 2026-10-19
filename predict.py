@@ -79,9 +79,10 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"{p.home} vs {p.away}" + (" (neutral venue)" if args.neutral else ""))
     print(f"  Expected goals:   {p.home_goals:.2f} - {p.away_goals:.2f}\n")
-    print(f"  {p.home} win:".ljust(28) + pct(p.home_win))
-    print("  Draw:".ljust(28) + pct(p.draw))
-    print(f"  {p.away} win:".ljust(28) + pct(p.away_win))
+    odds = p.fair_odds
+    print(f"  {p.home} win:".ljust(28) + pct(p.home_win) + f"   fair odds {odds['home']:.2f}")
+    print("  Draw:".ljust(28) + pct(p.draw) + f"   fair odds {odds['draw']:.2f}")
+    print(f"  {p.away} win:".ljust(28) + pct(p.away_win) + f"   fair odds {odds['away']:.2f}")
     print()
     for label, prob in p.double_chance.items():
         print(f"  Double chance {label}:".ljust(28) + pct(prob))

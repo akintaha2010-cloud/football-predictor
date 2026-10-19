@@ -101,6 +101,11 @@ class MatchPrediction:
         return float(self.score_matrix[1:, 1:].sum())
 
     @property
+    def fair_odds(self) -> dict[str, float]:
+        """Decimal odds with no bookmaker margin: 1 / probability."""
+        return {"home": 1 / self.home_win, "draw": 1 / self.draw, "away": 1 / self.away_win}
+
+    @property
     def clean_sheet(self) -> tuple[float, float]:
         """Chance that the home side, and the away side, concede no goals."""
         return float(self.score_matrix[:, 0].sum()), float(self.score_matrix[0, :].sum())
@@ -111,6 +116,7 @@ class MatchPrediction:
             "away": self.away,
             "expected_goals": {"home": self.home_goals, "away": self.away_goals},
             "result": {"home_win": self.home_win, "draw": self.draw, "away_win": self.away_win},
+            "fair_odds": self.fair_odds,
             "over": {str(line): self.over(line) for line in (1.5, 2.5, 3.5)},
             "double_chance": self.double_chance,
             "draw_no_bet": dict(zip(("home", "away"), self.draw_no_bet)),

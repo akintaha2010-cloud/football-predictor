@@ -30,9 +30,9 @@ The first run downloads the last 3 seasons from [football-data.co.uk](https://ww
 Galatasaray vs Fenerbahce
   Expected goals:   2.14 - 1.57
 
-  Galatasaray win:           50.0%
-  Draw:                      22.6%
-  Fenerbahce win:            27.4%
+  Galatasaray win:           50.0%   fair odds 2.00
+  Draw:                      22.6%   fair odds 4.42
+  Fenerbahce win:            27.4%   fair odds 3.65
 
   Double chance 1X:          72.6%
   Double chance 12:          77.4%
