@@ -10,6 +10,7 @@
     python predict.py Galatasaray Fenerbahce --score 2-1
     python predict.py Galatasaray Fenerbahce --top 10
     python predict.py Galatasaray Fenerbahce --h2h
+    python predict.py --leagues
 """
 
 from __future__ import annotations
@@ -40,6 +41,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
     parser.add_argument("--csv", metavar="FILE", help="With --table: also save the ratings as CSV")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    parser.add_argument("--leagues", action="store_true", help="List the league codes and exit")
     parser.add_argument("--h2h", action="store_true", help="Also show the last 5 meetings of the two teams")
     parser.add_argument("--top", type=int, default=5, metavar="N", help="How many most likely scores to show (default: 5)")
     parser.add_argument("--score", metavar="H-A", help="Also show the chance of this exact score, e.g. 2-1")
@@ -47,6 +49,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
     args = parser.parse_args(argv)
 
+    if args.leagues:
+        for code, name in LEAGUES.items():
+            print(f"{code:<4} {name}")
+        return 0
     if not args.table and not (args.home and args.away):
         parser.error("give HOME and AWAY teams, or --table")
     if args.csv and not args.table:
