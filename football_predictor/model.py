@@ -96,6 +96,13 @@ class MatchPrediction:
             float(self.score_matrix[margin < 0].sum()),
         )
 
+    def total_goals(self, max_goals: int = 5) -> dict[str, float]:
+        """Chance of each match total from 0 to `max_goals`, with the rest grouped as e.g. "6+"."""
+        totals = np.add.outer(np.arange(self.score_matrix.shape[0]), np.arange(self.score_matrix.shape[1]))
+        dist = {str(k): float(self.score_matrix[totals == k].sum()) for k in range(max_goals + 1)}
+        dist[f"{max_goals + 1}+"] = float(self.score_matrix[totals > max_goals].sum())
+        return dist
+
     @property
     def both_teams_score(self) -> float:
         return float(self.score_matrix[1:, 1:].sum())
@@ -120,6 +127,7 @@ class MatchPrediction:
             "over": {str(line): self.over(line) for line in (1.5, 2.5, 3.5)},
             "double_chance": self.double_chance,
             "draw_no_bet": dict(zip(("home", "away"), self.draw_no_bet)),
+            "total_goals": self.total_goals(),
             "both_teams_score": self.both_teams_score,
             "clean_sheet": dict(zip(("home", "away"), self.clean_sheet)),
             "handicap": {

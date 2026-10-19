@@ -186,3 +186,12 @@ def test_top_scores_count_and_order(model):
     assert len(top) == 3
     probs = [s["probability"] for s in top]
     assert probs == sorted(probs, reverse=True)
+
+
+def test_total_goals_distribution(model):
+    p = model.predict("A", "D")
+    dist = p.total_goals(max_goals=3)
+    assert list(dist) == ["0", "1", "2", "3", "4+"]
+    assert sum(dist.values()) == pytest.approx(1.0)
+    assert dist["0"] == pytest.approx(p.score_matrix[0, 0])
+    assert dist["3"] + dist["4+"] == pytest.approx(p.over(2.5))

@@ -45,6 +45,7 @@ Galatasaray vs Fenerbahce
   Over 1.5 goals:            89.3%
   Over 2.5 goals:            71.5%
   Over 3.5 goals:            50.7%
+  Total goals:               0: 3%  1: 7%  2: 18%  3: 21%  4: 19%  5: 14%  6+: 17%
   Both teams score:          70.7%
   Galatasaray clean sheet:   20.9%
   Fenerbahce clean sheet:    11.8%

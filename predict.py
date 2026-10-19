@@ -102,6 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     print()
     for line in (1.5, 2.5, 3.5):
         print(f"  Over {line} goals:".ljust(28) + pct(p.over(line)))
+    print("  Total goals:".ljust(29) + "  ".join(f"{k}: {v * 100:.0f}%" for k, v in p.total_goals().items()))
     print("  Both teams score:".ljust(28) + pct(p.both_teams_score))
     cs_home, cs_away = p.clean_sheet
     print(f"  {p.home} clean sheet:".ljust(28) + pct(cs_home))
