@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import time
+import urllib.error
 import urllib.request
+import warnings
 from datetime import date
 from pathlib import Path
 
@@ -11,6 +14,7 @@ import pandas as pd
 BASE_URL = "https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
 FIXTURES_URL = "https://www.football-data.co.uk/fixtures.csv"
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+MAX_AGE_HOURS = 12
 
 LEAGUES = {
     "T1": "Turkey Super Lig",
@@ -60,14 +64,26 @@ def _fetch(url: str, path: Path) -> Path:
     return path
 
 
-def download(league: str, season: str, data_dir: Path = DATA_DIR, force: bool = False) -> Path:
+def download(league: str, season: str, data_dir: Path = DATA_DIR, force: bool = False,
+             max_age_hours: float | None = None) -> Path:
+    """Cached CSV path. Re-downloads when `force`, or when the file is older than `max_age_hours`.
+
+    If a refresh fails (e.g. offline) but an older copy exists, the old copy is used with a warning.
+    """
     if league not in LEAGUES:
         raise ValueError(f"Unknown league {league!r}. Choose from: {', '.join(LEAGUES)}")
     data_dir.mkdir(parents=True, exist_ok=True)
     path = data_dir / f"{league}_{season}.csv"
-    if path.exists() and not force:
+    stale = max_age_hours is not None and path.exists() and time.time() - path.stat().st_mtime > max_age_hours * 3600
+    if path.exists() and not (force or stale):
         return path
-    return _fetch(BASE_URL.format(season=season, league=league), path)
+    try:
+        return _fetch(BASE_URL.format(season=season, league=league), path)
+    except (urllib.error.URLError, TimeoutError) as error:
+        if not path.exists():
+            raise
+        warnings.warn(f"Could not refresh {path.name} ({error}); using the cached copy")
+        return path
 
 
 def read_results(path: Path) -> pd.DataFrame:
@@ -85,8 +101,17 @@ def read_results(path: Path) -> pd.DataFrame:
 
 
 def load_results(league: str, seasons: list[str], data_dir: Path = DATA_DIR, refresh: bool = False) -> pd.DataFrame:
-    """Results for the given seasons, oldest first. The current season is re-downloaded when refresh=True."""
-    frames = [read_results(download(league, s, data_dir, force=refresh)) for s in seasons]
+    """Results for the given seasons, oldest first.
+
+    Finished seasons are downloaded once. The current season is re-downloaded when its copy is more than
+    MAX_AGE_HOURS old, or always when refresh=True.
+    """
+    current = season_code(current_season_start())
+    frames = [
+        read_results(download(league, s, data_dir, force=refresh and s == current,
+                              max_age_hours=MAX_AGE_HOURS if s == current else None))
+        for s in seasons
+    ]
     return pd.concat(frames, ignore_index=True).sort_values("Date", ignore_index=True)
 
 
