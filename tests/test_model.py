@@ -178,3 +178,11 @@ def test_score_probability(model):
     assert p.score_probability(h, a) == pytest.approx(prob)
     assert p.score_probability(99, 0) == 0.0
     assert p.score_probability(-1, 0) == 0.0
+
+
+def test_top_scores_count_and_order(model):
+    p = model.predict("A", "D")
+    top = p.to_dict(top_n=3)["top_scores"]
+    assert len(top) == 3
+    probs = [s["probability"] for s in top]
+    assert probs == sorted(probs, reverse=True)

@@ -8,6 +8,7 @@
     python predict.py Galatasaray Fenerbahce --json
     python predict.py Galatasaray Fenerbahce --form
     python predict.py Galatasaray Fenerbahce --score 2-1
+    python predict.py Galatasaray Fenerbahce --top 10
 """
 
 from __future__ import annotations
@@ -38,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--form", action="store_true", help="Also show each team's last 5 results")
     parser.add_argument("--csv", metavar="FILE", help="With --table: also save the ratings as CSV")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON")
+    parser.add_argument("--top", type=int, default=5, metavar="N", help="How many most likely scores to show (default: 5)")
     parser.add_argument("--score", metavar="H-A", help="Also show the chance of this exact score, e.g. 2-1")
     parser.add_argument("--xi", type=float, default=DEFAULT_XI, help="Time decay per day")
     parser.add_argument("--l2", type=float, default=DEFAULT_L2, help="Rating shrinkage")
@@ -47,6 +49,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("give HOME and AWAY teams, or --table")
     if args.csv and not args.table:
         parser.error("--csv only works with --table")
+    if args.top < 1:
+        parser.error("--top must be at least 1")
     if args.score and not re.fullmatch(r"\d+-\d+", args.score):
         parser.error("--score must look like 2-1")
 
@@ -79,7 +83,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.json:
-        print(json.dumps({"league": args.league, "neutral": args.neutral, **p.to_dict()}, indent=2, ensure_ascii=False))
+        print(json.dumps({"league": args.league, "neutral": args.neutral, **p.to_dict(top_n=args.top)}, indent=2, ensure_ascii=False))
         return 0
 
     print(f"{p.home} vs {p.away}" + (" (neutral venue)" if args.neutral else ""))
@@ -110,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
         home_goals, away_goals = map(int, args.score.split("-"))
         print(f"\n  Exact score {home_goals}-{away_goals}:".ljust(29) + pct(p.score_probability(home_goals, away_goals)))
     print("\n  Most likely scores:")
-    for home_goals, away_goals, prob in p.top_scores(5):
+    for home_goals, away_goals, prob in p.top_scores(args.top):
         print(f"    {home_goals}-{away_goals}  {pct(prob)}")
     if args.form:
         for team in (p.home, p.away):
