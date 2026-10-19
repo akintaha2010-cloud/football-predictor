@@ -114,3 +114,16 @@ def test_read_results_skips_unplayed_matches(tmp_path):
     assert len(df) == 1
     assert df.iloc[0]["HomeTeam"] == "Galatasaray"
     assert df.iloc[0]["Date"] == pd.Timestamp("2026-08-14")
+
+
+def test_handicap_lines(model):
+    p = model.predict("A", "D")
+    assert p.handicap(0) == pytest.approx((p.home_win, p.draw, p.away_win))
+    win, push, lose = p.handicap(-0.5)
+    assert push == 0
+    assert win == pytest.approx(p.home_win)
+    win, push, lose = p.handicap(-1)
+    assert win + push + lose == pytest.approx(p.score_matrix.sum())
+    assert win < p.home_win
+    assert p.handicap(-1.5)[0] == pytest.approx(win)
+    assert p.handicap(0.5)[0] == pytest.approx(p.home_win + p.draw)

@@ -59,8 +59,15 @@ def main(argv: list[str] | None = None) -> int:
     print("  Draw:".ljust(28) + pct(p.draw))
     print(f"  {p.away} win:".ljust(28) + pct(p.away_win))
     print()
-    print("  Over 2.5 goals:".ljust(28) + pct(p.over(2.5)))
+    for line in (1.5, 2.5, 3.5):
+        print(f"  Over {line} goals:".ljust(28) + pct(p.over(line)))
     print("  Both teams score:".ljust(28) + pct(p.both_teams_score))
+    print(f"\n  Asian handicap for {p.home}:")
+    print("    Line".ljust(28) + f"{'win':>6} {'push':>6} {'lose':>6}")
+    centre = -round(2 * (p.home_goals - p.away_goals)) / 2
+    for line in (centre - 0.5, centre, centre + 0.5):
+        win, push, lose = p.handicap(line)
+        print(f"    {line:+.1f}".ljust(28) + f"{pct(win)} {pct(push)} {pct(lose)}")
     print("\n  Most likely scores:")
     for home_goals, away_goals, prob in p.top_scores(5):
         print(f"    {home_goals}-{away_goals}  {pct(prob)}")
