@@ -49,6 +49,14 @@ def test_home_advantage_is_positive(model):
     assert model.predict("B", "C").home_win > model.predict("C", "B").away_win
 
 
+def test_neutral_venue_is_symmetric(model):
+    p = model.predict("B", "C", neutral=True)
+    q = model.predict("C", "B", neutral=True)
+    assert p.home_win == pytest.approx(q.away_win)
+    assert p.draw == pytest.approx(q.draw)
+    assert p.home_win < model.predict("B", "C").home_win
+
+
 def test_ratings_order(model):
     assert list(model.ratings().index) == ["A", "B", "C", "D"]
 
