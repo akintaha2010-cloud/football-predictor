@@ -73,6 +73,11 @@ def main(argv: list[str] | None = None) -> int:
     print("  Draw:".ljust(28) + pct(p.draw))
     print(f"  {p.away} win:".ljust(28) + pct(p.away_win))
     print()
+    for label, prob in p.double_chance.items():
+        print(f"  Double chance {label}:".ljust(28) + pct(prob))
+    dnb_home, dnb_away = p.draw_no_bet
+    print("  Draw no bet:".ljust(28) + f"{pct(dnb_home)} - {pct(dnb_away).strip()}")
+    print()
     for line in (1.5, 2.5, 3.5):
         print(f"  Over {line} goals:".ljust(28) + pct(p.over(line)))
     print("  Both teams score:".ljust(28) + pct(p.both_teams_score))

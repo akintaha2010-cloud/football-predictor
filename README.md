@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/akintaha2010-cloud/football-predictor/actions/workflows/tests.yml/badge.svg)](https://github.com/akintaha2010-cloud/football-predictor/actions/workflows/tests.yml)
 
-Estimates football match probabilities (home win / draw / away win, exact scores, over/under 1.5/2.5/3.5, Asian handicap, both teams to score) from past results.
+Estimates football match probabilities (home win / draw / away win, double chance, draw no bet, exact scores, over/under 1.5/2.5/3.5, Asian handicap, both teams to score) from past results.
 
 ## Setup
 
@@ -31,6 +31,11 @@ Galatasaray vs Fenerbahce
   Galatasaray win:           50.0%
   Draw:                      22.6%
   Fenerbahce win:            27.4%
+
+  Double chance 1X:          72.6%
+  Double chance 12:          77.4%
+  Double chance X2:          50.0%
+  Draw no bet:               64.6% - 35.4%
 
   Over 1.5 goals:            89.3%
   Over 2.5 goals:            71.5%
