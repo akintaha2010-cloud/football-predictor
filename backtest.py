@@ -51,6 +51,25 @@ def score(df: pd.DataFrame, prefix: str) -> dict[str, float]:
     }
 
 
+def calibration(df: pd.DataFrame, prefix: str, bins: int = 5) -> pd.DataFrame:
+    """Groups every predicted outcome probability into bins and compares it with how often it happened."""
+    probs = df[[f"{prefix}{o}" for o in OUTCOMES]].to_numpy().ravel()
+    hits = np.array([[a == o for o in OUTCOMES] for a in df["actual"]], dtype=float).ravel()
+    edges = np.linspace(0, 1, bins + 1)
+    which = np.clip(np.digitize(probs, edges) - 1, 0, bins - 1)
+    rows = []
+    for b in range(bins):
+        mask = which == b
+        if mask.any():
+            rows.append({
+                "bin": f"{edges[b]:.0%}-{edges[b + 1]:.0%}",
+                "count": int(mask.sum()),
+                "predicted": float(probs[mask].mean()),
+                "observed": float(hits[mask].mean()),
+            })
+    return pd.DataFrame(rows)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--league", default="T1", choices=LEAGUES)
@@ -76,6 +95,11 @@ def main():
         print(f"  bookmaker: {score(with_odds, 'm')}")
     base = df.assign(bH=(df["actual"] == "H").mean(), bD=(df["actual"] == "D").mean(), bA=(df["actual"] == "A").mean())
     print(f"  base rate: {score(base, 'b')}")
+
+    print("\nCalibration (all home/draw/away probabilities):")
+    print(f"  {'Predicted':<10} {'Count':>6} {'Avg predicted':>14} {'Happened':>9}")
+    for row in calibration(df, "p").itertuples():
+        print(f"  {row.bin:<10} {row.count:6d} {row.predicted:14.1%} {row.observed:9.1%}")
 
 
 if __name__ == "__main__":
