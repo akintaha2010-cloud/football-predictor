@@ -69,6 +69,18 @@ class MatchPrediction:
         goals = np.add.outer(np.arange(self.score_matrix.shape[0]), np.arange(self.score_matrix.shape[1]))
         return float(self.score_matrix[goals > line].sum())
 
+    def handicap(self, line: float) -> tuple[float, float, float]:
+        """Home win / push / home loss probabilities when `line` goals are added to the home score.
+
+        Whole lines (e.g. -1) can push and refund the stake; half lines (e.g. -0.5) cannot.
+        """
+        margin = np.subtract.outer(np.arange(self.score_matrix.shape[0]), np.arange(self.score_matrix.shape[1])) + line
+        return (
+            float(self.score_matrix[margin > 0].sum()),
+            float(self.score_matrix[margin == 0].sum()),
+            float(self.score_matrix[margin < 0].sum()),
+        )
+
     @property
     def both_teams_score(self) -> float:
         return float(self.score_matrix[1:, 1:].sum())
