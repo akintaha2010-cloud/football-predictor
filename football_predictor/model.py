@@ -100,6 +100,11 @@ class MatchPrediction:
     def both_teams_score(self) -> float:
         return float(self.score_matrix[1:, 1:].sum())
 
+    @property
+    def clean_sheet(self) -> tuple[float, float]:
+        """Chance that the home side, and the away side, concede no goals."""
+        return float(self.score_matrix[:, 0].sum()), float(self.score_matrix[0, :].sum())
+
     def to_dict(self, top_n: int = 5) -> dict:
         return {
             "home": self.home,
@@ -110,6 +115,7 @@ class MatchPrediction:
             "double_chance": self.double_chance,
             "draw_no_bet": dict(zip(("home", "away"), self.draw_no_bet)),
             "both_teams_score": self.both_teams_score,
+            "clean_sheet": dict(zip(("home", "away"), self.clean_sheet)),
             "handicap": {
                 f"{line:+.1f}": dict(zip(("win", "push", "lose"), self.handicap(line)))
                 for line in (-2.5, -2.0, -1.5, -1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5)

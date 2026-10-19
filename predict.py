@@ -91,6 +91,9 @@ def main(argv: list[str] | None = None) -> int:
     for line in (1.5, 2.5, 3.5):
         print(f"  Over {line} goals:".ljust(28) + pct(p.over(line)))
     print("  Both teams score:".ljust(28) + pct(p.both_teams_score))
+    cs_home, cs_away = p.clean_sheet
+    print(f"  {p.home} clean sheet:".ljust(28) + pct(cs_home))
+    print(f"  {p.away} clean sheet:".ljust(28) + pct(cs_away))
     print(f"\n  Asian handicap for {p.home}:")
     print("    Line".ljust(28) + f"{'win':>6} {'push':>6} {'lose':>6}")
     centre = -round(2 * (p.home_goals - p.away_goals)) / 2

@@ -153,3 +153,12 @@ def test_every_league_has_a_name():
 
     assert len(LEAGUES) == 18
     assert all(code.isalnum() and name for code, name in LEAGUES.items())
+
+
+def test_clean_sheets(model):
+    p = model.predict("A", "D")
+    cs_home, cs_away = p.clean_sheet
+    assert cs_home == pytest.approx(p.score_matrix[:, 0].sum())
+    assert cs_home > cs_away
+    # Either side keeps a clean sheet exactly when both teams do not score.
+    assert cs_home + cs_away - p.score_matrix[0, 0] == pytest.approx(1 - p.both_teams_score)

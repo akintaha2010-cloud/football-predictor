@@ -43,6 +43,8 @@ Galatasaray vs Fenerbahce
   Over 2.5 goals:            71.5%
   Over 3.5 goals:            50.7%
   Both teams score:          70.7%
+  Galatasaray clean sheet:   20.9%
+  Fenerbahce clean sheet:    11.8%
 
   Asian handicap for Galatasaray:
     Line                       win   push   lose
