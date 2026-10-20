@@ -162,3 +162,11 @@ def test_clean_sheets(model):
     assert cs_home > cs_away
     # Either side keeps a clean sheet exactly when both teams do not score.
     assert cs_home + cs_away - p.score_matrix[0, 0] == pytest.approx(1 - p.both_teams_score)
+
+
+def test_fair_odds_are_inverse_probabilities(model):
+    p = model.predict("A", "D")
+    odds = p.fair_odds
+    assert odds["home"] * p.home_win == pytest.approx(1.0)
+    assert sum(1 / o for o in odds.values()) == pytest.approx(1.0)
+    assert odds["home"] < odds["away"]
